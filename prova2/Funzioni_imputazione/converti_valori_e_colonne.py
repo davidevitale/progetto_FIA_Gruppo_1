@@ -43,13 +43,22 @@ def converti_valori_colonne():
     combined_df['CabinNum'] = pd.to_numeric(combined_df['CabinNum'], errors='coerce')
 
     # Crea le colonne Cabin_region1-7 lasciando NaN dove CabinNum è mancante
-    combined_df['Cabin_region1'] = combined_df['CabinNum'].apply(lambda x: 1 if x < 300 else (0 if pd.notna(x) else pd.NA))
-    combined_df['Cabin_region2'] = combined_df['CabinNum'].apply(lambda x: 1 if 300 <= x < 600 else (0 if pd.notna(x) else pd.NA))
-    combined_df['Cabin_region3'] = combined_df['CabinNum'].apply(lambda x: 1 if 600 <= x < 900 else (0 if pd.notna(x) else pd.NA))
-    combined_df['Cabin_region4'] = combined_df['CabinNum'].apply(lambda x: 1 if 900 <= x < 1200 else (0 if pd.notna(x) else pd.NA))
-    combined_df['Cabin_region5'] = combined_df['CabinNum'].apply(lambda x: 1 if 1200 <= x < 1500 else (0 if pd.notna(x) else pd.NA))
-    combined_df['Cabin_region6'] = combined_df['CabinNum'].apply(lambda x: 1 if 1500 <= x < 1800 else (0 if pd.notna(x) else pd.NA))
-    combined_df['Cabin_region7'] = combined_df['CabinNum'].apply(lambda x: 1 if x >= 1800 else (0 if pd.notna(x) else pd.NA))
+
+    conditions = [
+    (combined_df['CabinNum'] < 300),
+    (combined_df['CabinNum'] >= 300) & (combined_df['CabinNum'] < 600),
+    (combined_df['CabinNum'] >= 600) & (combined_df['CabinNum'] < 900),
+    (combined_df['CabinNum'] >= 900) & (combined_df['CabinNum'] < 1200),
+    (combined_df['CabinNum'] >= 1200) & (combined_df['CabinNum'] < 1500),
+    (combined_df['CabinNum'] >= 1500) & (combined_df['CabinNum'] < 1800), 
+    (combined_df['CabinNum'] >= 1800)
+    ]
+
+    # Etichette corrispondenti
+    labels = [1, 2, 3, 4, 5, 6, 7]
+
+    # Crea la nuova colonna con le etichette
+    combined_df['Cabin_region'] = np.select(conditions, labels, default=pd.NA)
 
 
     # Surname
@@ -62,22 +71,19 @@ def converti_valori_colonne():
     #combined_df[spesa_cols] = combined_df[spesa_cols].fillna(0)
     #combined_df['Expendures'] = combined_df[spesa_cols].sum(axis=1)
 
-    combined_df[['VIP', 'CryoSleep', 'RoomService' 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']] = combined_df[['VIP', 'CryoSleep', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].fillna(value=0)
+    combined_df[['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].fillna(value=0)
     
-        # Calcolo spese
+    # Calcolo spese
     spesa_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
 
     combined_df['Expendures'] = combined_df[spesa_cols].sum(axis=1)
 
-    combined_df['NoSpending'] = (combined_df['Expendures'] == 0).astype(int)
+    #combined_df['NoSpending'] = (combined_df['Expendures'] == 0).astype(int)
+
+    bool_cols = combined_df.select_dtypes(include=['bool']).columns
+    combined_df[bool_cols] = combined_df[bool_cols].astype(int)
 
 #######################################
-
-    # Calcola la mediana solo sul training
-    #expendures_median = combined_df.loc[combined_df['IsTrain'], 'Expendures'].median()
-
-    # Binarizza expendures
-    #combined_df['Expendures'] = combined_df['Expendures'] > expendures_median
 
 #######################################
 
@@ -87,14 +93,13 @@ def converti_valori_colonne():
     #print(combined_df['AgeGroup'].value_counts(dropna=False))
 
 
-
     #print("Valori mancanti nella colonna AgeGroup:", combined_df['AgeGroup'].isna().sum())
 
 
     # === 5. Ritaglia i dataset finali ===
-    new_train = combined_df[combined_df['IsTrain']== True].copy()
-    new_val   = combined_df[combined_df['IsValidation']== True].copy()
-    new_test  = combined_df[combined_df['IsTest']== True].copy()
+    new_train = combined_df[combined_df['IsTrain']== 1].copy()
+    new_val   = combined_df[combined_df['IsValidation']== 1].copy()
+    new_test  = combined_df[combined_df['IsTest']== 1].copy()
 
     # === 6. Salva i file finali ===
     new_train.to_excel('C:/Users/dvita/Desktop/TITANIC/train_df.xlsx', index=False)

@@ -12,11 +12,10 @@ def riempi_Home_Planet(combined_df):
 
     # === 1. IMPUTAZIONE PER GRUPPO ===
     # --- Separa il training set ---
-    train_df = combined_df[combined_df['IsTrain'] == True].copy()
+    train_df = combined_df[combined_df['IsTrain'] == 1].copy()
 
 # --- Costruisci la mappa Group → HomePlanet SOLO sul training ---
-    gruppi_multipli = train_df['Group'].value_counts()
-    gruppi_validi = gruppi_multipli[gruppi_multipli > 1].index
+    gruppi_validi = train_df.loc[train_df['Group_size'] > 1, 'Group'].unique()
 
     homeplanet_gruppo = (
         train_df[train_df['Group'].isin(gruppi_validi)]
@@ -58,11 +57,7 @@ def riempi_Home_Planet(combined_df):
         axis=1
     )
 
-        # === 4. IMPUTAZIONE FINALE CON MODA SU TRAIN ===
-    moda_homeplanet = train_df['HomePlanet'].mode()
-    if not moda_homeplanet.empty:
-        moda_hp = moda_homeplanet[0]
-        combined_df['HomePlanet'] = combined_df['HomePlanet'].fillna(moda_hp)
+
 
     # Conta valori mancanti DOPO
     mancanti_dopo = combined_df['HomePlanet'].isna().sum()

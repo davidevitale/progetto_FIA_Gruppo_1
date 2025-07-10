@@ -1,61 +1,58 @@
-import numpy as np
-import pandas as pd
 from sklearn.impute import KNNImputer
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import StandardScaler
+import pandas as pd
+import numpy as np
 
-def missing_values(combined_df, output_train, output_val, output_test):
+def knn_impute(combined_df, output_train, output_val, output_test):
+    exclude_cols = ["IsTrain", "IsValidation", "IsTest", "Transported"]
 
-    combined_df = combined_df.drop(columns=['Surname', 'Group'])
+    # Converti pd.NA -> np.nan
+    combined_df = combined_df.replace({pd.NA: np.nan})
 
-    # Converti tutti i booleani in 1/0 tranne la colonna 'Side'
-    bool_cols = combined_df.select_dtypes(include=['bool']).columns.tolist()
-    if 'Side' in bool_cols:
-        bool_cols.remove('Side')
+    # Seleziona colonne numeriche
+    numeric_cols = combined_df.drop(columns=exclude_cols).select_dtypes(include=[np.number]).columns.tolist()
 
-    combined_df[bool_cols] = combined_df[bool_cols].replace({True: 1, False: 0})
+    # Standardizza solo le colonne numeriche
+    scaler = StandardScaler()
+    df_numeric = combined_df[numeric_cols]
 
-
-    # 2. Definisci le colonne da codificare
-    ordinal = ['Group_size']
-    categorical = ['Deck', 'HomePlanet', 'Destination', 'Side'] + [f'Cabin_region{i}' for i in range(1, 8)]
-    columns_to_encode = ordinal + categorical
-
-    # 3. Fitta l'OrdinalEncoder solo sul train
-    encoder = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=np.nan)
+    # Fit solo sul train set
     train_mask = combined_df['IsTrain'] == 1
-    encoder.fit(combined_df.loc[train_mask, columns_to_encode])
+    scaler.fit(df_numeric[train_mask])
 
-    # 4. Applica encoding su tutto combined_df
-    combined_df[columns_to_encode] = encoder.transform(combined_df[columns_to_encode])
+    df_scaled = df_numeric.copy()
+    df_scaled[numeric_cols] = scaler.transform(df_numeric)
 
-    # 5. Uniforma i NaN
-    combined_df = combined_df.fillna(np.nan)
-
-    # 6. KNN Imputation: fit solo sul train
+    # Imputazione KNN
     imputer = KNNImputer(n_neighbors=5)
-    imputer.fit(combined_df.loc[train_mask].drop(columns=["IsTrain", "IsValidation", "IsTest"]))
+    imputed_values = imputer.fit_transform(df_scaled)
 
-    # 7. Trasforma tutto il dataframe (esclusi flag)
-    features = combined_df.drop(columns=["IsTrain", "IsValidation", "IsTest"])
-    imputed_values = imputer.transform(features)
+    # Ricrea DataFrame imputato
+    df_imputed = pd.DataFrame(imputed_values, columns=numeric_cols, index=combined_df.index)
 
-    # 8. Ricostruisci il dataframe completo con i flag originali
-    combined_df_imputed = pd.DataFrame(imputed_values, columns=features.columns, index=combined_df.index)
-    combined_df_imputed[["IsTrain", "IsValidation", "IsTest"]] = combined_df[["IsTrain", "IsValidation", "IsTest"]]
+    # De-standardizza
+    df_imputed[numeric_cols] = scaler.inverse_transform(df_imputed[numeric_cols])
 
-    # 9. Suddividi i dataset
-    df_train_encoded = combined_df_imputed[combined_df_imputed['IsTrain'] == 1]
-    df_val_encoded   = combined_df_imputed[combined_df_imputed['IsValidation'] == 1]
-    df_test_encoded  = combined_df_imputed[combined_df_imputed['IsTest'] == 1]
+    #Rendi interi i dati (approssimazione)
+    df_imputed[numeric_cols] = df_imputed[numeric_cols].round().astype(np.int64)
 
-    # 10. Salva i dataset
-    df_train_encoded.to_excel(output_train, index=False)
-    df_val_encoded.to_excel(output_val, index=False)
-    df_test_encoded.to_excel(output_test, index=False)
+    # Aggiungi colonne non numeriche
+    for col in exclude_cols:
+        df_imputed[col] = combined_df[col]
 
-    print("\nFile salvati correttamente:")
-    print(f"   Train codificato -> {output_train}")
-    print(f"   Val codificato   -> {output_val}")
-    print(f"   Test codificato  -> {output_test}")
+    # Suddividi i dataset
+    df_train = df_imputed[df_imputed["IsTrain"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
+    df_val   = df_imputed[df_imputed["IsValidation"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
+    df_test  = df_imputed[df_imputed["IsTest"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
 
-    return df_train_encoded, df_val_encoded, df_test_encoded
+    # Salva su Excel
+    df_train.to_excel(output_train, index=False)
+    df_val.to_excel(output_val, index=False)
+    df_test.to_excel(output_test, index=False)
+
+    print("\n✅ File salvati correttamente:")
+    print(f"- Train: {output_train}")
+    print(f"- Val:   {output_val}")
+    print(f"- Test:  {output_test}")
+
+    return df_train, df_val, df_test

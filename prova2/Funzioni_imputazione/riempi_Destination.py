@@ -7,7 +7,7 @@ def riempi_Destination(combined_df):
     # === 1. IMPUTAZIONE PER COGNOME ===
 
     # Mappa cognome → Destination più frequente
-    train_df = combined_df[combined_df['IsTrain'] == True].copy()
+    train_df = combined_df[combined_df['IsTrain'] == 1].copy()
 
     destination_surname = (
         train_df.dropna(subset=['Destination'])
