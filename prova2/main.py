@@ -1,6 +1,7 @@
 from Funzioni_imputazione.converti_valori_e_colonne import converti_valori_colonne
 from Funzioni_imputazione.imputazione import imputazione
 from hold import holdout_split
+from Funzioni_imputazione.adaboost import adaboost
 
 
 def main():
@@ -18,7 +19,10 @@ def main():
     combined_df = converti_valori_colonne()
 
     # 3) Imputazione sul combined_df
-    combined_df = imputazione(combined_df)
+    df_train_encoded, df_val_encoded, df_test_encoded = imputazione(combined_df)
+
+    # 4) Addestramento modello AdaBoost
+    adaboost(df_train_encoded, df_val_encoded, target_column = 'Transported', n_estimators=250, random_state=42)
 
     # Puoi salvare df_finale oppure stampare info
     print("Imputazione completata.")
