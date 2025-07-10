@@ -31,7 +31,7 @@ def adaboost(df_train_encoded, df_val_encoded, target_column, n_estimators=250, 
     y_val = df_val_encoded[target_column]
 
     # 2. Inizializza modello AdaBoost (versione >= 1.2 → usa "estimator")
-    base_model = DecisionTreeClassifier(max_depth=4, random_state=random_state)
+    base_model = DecisionTreeClassifier(max_depth=3, random_state=random_state)
     model = AdaBoostClassifier(
         estimator=base_model,
         n_estimators=n_estimators,
