@@ -3,10 +3,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
-#df = pd.read_excel('C:/Users/Standard/Desktop/Titanic/Titanic/train_holdout.xlsx')
+# === Input dinamico per il file ===
+file_path = input("Inserisci il percorso del file Excel (.xlsx) da caricare: ")
 
-# Ora carichi uno dei file di output per lavorare con il DataFrame
-df = pd.read_excel('C:/Users/dvita/Desktop/TITANIC/train.xlsx')
+# Caricamento del DataFrame
+df = pd.read_excel(file_path)
 
 # Nuova feature - Group (presupponendo che 'PassengerId' sia nel formato '123_45')
 df['Group'] = df['PassengerId'].apply(lambda x: x.split('_')[0]).astype(int)
