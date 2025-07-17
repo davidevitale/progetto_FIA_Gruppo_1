@@ -1,10 +1,5 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Sun Jul  6 11:17:57 2025
-
-@author: matmi
-"""
 import pandas as pd
+import matplotlib.pyplot as plt
 
 # === 1. Caricamento dataset (input dinamico) ===
 csv_path = input("Inserisci il percorso del file train.csv: ")
@@ -46,3 +41,28 @@ if not cryosleep_false.empty:
     perc_cfsf = (cryosleep_false_spending_false.shape[0] / cryosleep_false.shape[0]) * 100
     print(f"\nPercentuale di persone NON in CryoSleep che hanno speso: {perc_cfst:.2f}%")
     print(f"Percentuale di persone NON in CryoSleep che NON hanno speso: {perc_cfsf:.2f}%")
+
+# === 8. Grafico a barre: combinazioni CryoSleep / Spending ===
+combinations = {
+    "CryoSleep=True & Spending=True": cryosleep_true_spending_true.shape[0],
+    "CryoSleep=True & Spending=False": cryosleep_true_spending_false.shape[0],
+    "CryoSleep=False & Spending=True": cryosleep_false_spending_true.shape[0],
+    "CryoSleep=False & Spending=False": cryosleep_false_spending_false.shape[0],
+}
+
+labels = list(combinations.keys())
+values = list(combinations.values())
+
+plt.figure(figsize=(10, 6))
+bars = plt.bar(labels, values, color=['orange', 'blue', 'orange', 'blue'])
+
+# Aggiunge etichette numeriche sopra ogni barra
+for bar in bars:
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2., height + 50, f'{int(height)}', ha='center', va='bottom')
+
+plt.title('Conteggi combinati di CryoSleep e Spending')
+plt.ylabel('Numero di persone')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
