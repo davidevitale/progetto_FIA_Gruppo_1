@@ -23,7 +23,6 @@ def riempi_Destination(combined_df):
         axis=1
     )
 
-
     # === 2. IMPUTAZIONE PER HomePlanet = Mars ===
     cond_mars = (combined_df['Destination'].isna()) & (combined_df['HomePlanet'] == 'Mars')
     combined_df.loc[cond_mars, 'Destination'] = 'TRAPPIST-1e'

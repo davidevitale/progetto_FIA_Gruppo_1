@@ -6,7 +6,7 @@ def encoding(combined_df):
     # 1. Seleziona il train set
     train_mask = combined_df['IsTrain'] == 1
 
-    # 3. Rimuovi colonne inutili inclusa PassengerId dal DataFrame principale
+    # 3. Rimuovi colonne inutili
     combined_df = combined_df.drop(columns=['Surname', 'Group', 'Expenditures'])
 
     # 4. Colonne categoriche

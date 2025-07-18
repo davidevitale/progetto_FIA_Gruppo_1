@@ -17,7 +17,7 @@ def riempi_Surname(combined_df):
     # Considera solo gruppi con più di una persona
     gruppi_validi = train_df.loc[train_df['Group_size'] > 1, 'Group'].unique()
 
-    # Costruisce mappa: Group → Surname (se univoco)
+    # Costruisce mappa: Group → Surname
     surname_gruppo = (
         train_df[train_df['Group'].isin(gruppi_validi)]
         .dropna(subset=['Surname'])

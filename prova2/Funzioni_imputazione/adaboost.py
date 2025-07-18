@@ -29,7 +29,6 @@ def adaboost(
         id_column (str): Nome della colonna identificativa da usare nella submission.
         submission_filename (str): Nome del file CSV di output.
         n_estimators (int): Numero di estimatori per AdaBoost. Default = 250.
-        random_state (int): Seed per riproducibilità.
 
     Returns:
         model: Modello addestrato (AdaBoostClassifier)
@@ -73,11 +72,11 @@ def adaboost(
     plt.grid(False)
     plt.show()
 
-    # 7. Predizione sul test (rimuovo solo id, target non c'è)
+    # 7. Predizione sul test
     X_test = df_test_encoded.drop(columns=cols_to_drop)
     y_test_pred = model.predict(X_test)
 
-    # 8. Preparo submission con SOLO id_column e target_column (predizioni)
+    # 8. Submission con SOLO id_column e target_column (predizioni)
     submission = pd.DataFrame({
         id_column: df_test_encoded[id_column],
         target_column: y_test_pred.astype(int)

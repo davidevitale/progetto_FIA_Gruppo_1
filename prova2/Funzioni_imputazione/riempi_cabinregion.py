@@ -2,6 +2,7 @@
 import pandas as pd
 
 def riempi_cabinregion(combined_df):
+    #Per evitare warning di SettingWithCopy
     train_df = combined_df[combined_df['IsTrain'] == 1].copy()
 
     col_name = 'Cabin_region'

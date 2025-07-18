@@ -21,7 +21,8 @@ def riempi_Home_Planet(combined_df):
         train_df[train_df['Group'].isin(gruppi_validi)]
         .dropna(subset=['HomePlanet'])
         .groupby('Group')['HomePlanet']
-        .agg(lambda x: x.mode()[0])
+        .agg(lambda x: x.mode()[0] if not      x.mode().empty else None)
+
         .dropna()
         .to_dict()
     )

@@ -29,6 +29,8 @@ def converti_valori_colonne(train_path, val_path, test_path,
 
     combined_df[['Deck', 'CabinNum', 'Side']] = combined_df['Cabin'].str.split('/', expand=True)
     combined_df.drop(columns=['Cabin'], inplace=True)
+    
+    #Per convertire in numerico e lasciare NaN
     combined_df['CabinNum'] = pd.to_numeric(combined_df['CabinNum'], errors='coerce')
 
     conditions = [
@@ -48,10 +50,8 @@ def converti_valori_colonne(train_path, val_path, test_path,
 
     spesa_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
     combined_df[spesa_cols] = combined_df[spesa_cols].fillna(0)
-    combined_df['Expenditures'] = combined_df[spesa_cols].sum(axis=1)  # ← nome corretto
+    combined_df['Expenditures'] = combined_df[spesa_cols].sum(axis=1) 
 
-    #bool_cols = combined_df.select_dtypes(include=['bool']).columns
-    #combined_df[bool_cols] = combined_df[bool_cols].astype(int)
     combined_df['Transported'] = combined_df['Transported'].map({True: 1, False: 0})
 
     # Ricava i DataFrame finali
@@ -63,10 +63,5 @@ def converti_valori_colonne(train_path, val_path, test_path,
     df_train.to_excel(output_train_path, index=False)
     df_val.to_excel(output_val_path, index=False)
     df_test.to_excel(output_test_path, index=False)
-
-    print("File salvati correttamente:")
-    print(f"- Train: {output_train_path}")
-    print(f"- Val:   {output_val_path}")
-    print(f"- Test:  {output_test_path}")
 
     return combined_df

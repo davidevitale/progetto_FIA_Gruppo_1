@@ -1,6 +1,3 @@
-
-from collections import Counter
-
 def riempi_deck(combined_df):
     # === IMPUTAZIONE DECK ===
     CD_bef = combined_df['Deck'].isna().sum()
@@ -27,12 +24,12 @@ def riempi_deck(combined_df):
     combined_df.loc[GCD_index, 'Deck'] = combined_df.loc[GCD_index, 'Group'].map(deck_mode_per_group)
 
     # Riempie i restanti missing con 'T'
-    combined_df['Deck'].fillna('T')
+    combined_df['Deck'] = combined_df['Deck'].fillna('T')
 
     CD_aft = combined_df['Deck'].isna().sum()
 
-    print(f"#Deck missing values before: {CD_bef}")
-    print(f"#Deck missing values after:  {CD_aft}")
+    print(f"Deck missing values before: {CD_bef}")
+    print(f"Deck missing values after:  {CD_aft}")
 
     return combined_df
 
