@@ -42,19 +42,19 @@ def knn_impute(combined_df, output_train, output_val, output_test):
     df_imputed[numeric_cols] = df_imputed[numeric_cols].round().astype(np.int64)
 
     # Suddividi i dataset
-    df_train = df_imputed[df_imputed["IsTrain"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
-    df_val   = df_imputed[df_imputed["IsValidation"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
-    df_test  = df_imputed[df_imputed["IsTest"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
+    df_train_encoded = df_imputed[df_imputed["IsTrain"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
+    df_val_encoded   = df_imputed[df_imputed["IsValidation"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
+    df_test_encoded  = df_imputed[df_imputed["IsTest"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
 
     # Salva su Excel
-    df_train.to_excel(output_train, index=False)
-    df_val.to_excel(output_val, index=False)
-    df_test.to_excel(output_test, index=False)
+    df_train_encoded.to_excel(output_train, index=False)
+    df_val_encoded.to_excel(output_val, index=False)
+    df_test_encoded.to_excel(output_test, index=False)
 
     print("File salvati correttamente:")
     print(f"- Train: {output_train}")
     print(f"- Val:   {output_val}")
     print(f"- Test:  {output_test}")
 
-    return df_train, df_val, df_test
+    return df_train_encoded, df_val_encoded, df_test_encoded
 
