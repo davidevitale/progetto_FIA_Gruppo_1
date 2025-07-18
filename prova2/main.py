@@ -18,7 +18,6 @@ def main():
         val_path=output_val,
         test_size=0.2,
         stratify_col='Transported',
-        random_state=42
     )
 
     # === 2) Conversione e pulizia ===
@@ -57,8 +56,7 @@ def main():
         target_column='Transported',
         id_column='PassengerId',
         submission_filename=submission_filename,
-        n_estimators=250,
-        random_state=42
+        n_estimators=300,
     )
 
     print("Pipeline completata con successo.")

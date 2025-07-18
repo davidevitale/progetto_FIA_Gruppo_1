@@ -7,7 +7,6 @@ def holdout_split(
     val_path,
     test_size=0.2,
     stratify_col='Transported',
-    random_state=42
 ):
     # === Caricamento del dataset ===
     df = pd.read_csv(input_path)
@@ -17,7 +16,6 @@ def holdout_split(
         df,
         test_size=test_size,
         stratify=df[stratify_col] if stratify_col in df.columns else None,
-        random_state=random_state
     )
 
     # === Salvataggio dei file ===
