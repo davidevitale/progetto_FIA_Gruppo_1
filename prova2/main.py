@@ -1,19 +1,19 @@
 from Funzioni_imputazione.converti_valori_e_colonne import converti_valori_colonne
 from Funzioni_imputazione.imputazione import imputazione
-from hold import holdout_split
 from Funzioni_imputazione.adaboost import adaboost
+from hold import holdout_split
+
 
 def main():
-    # === Input dinamici per i percorsi dei file ===
-    excel_file = input("Inserisci il percorso del file iniziale (.xlsx): ")
+    # === Input dei percorsi dei file ===
+    input_file = input("Inserisci il percorso del file iniziale (.csv): ")
     output_train = input("Inserisci il percorso per salvare il file TRAIN holdout (.xlsx): ")
     output_val = input("Inserisci il percorso per salvare il file VALIDATION holdout (.xlsx): ")
     test_file = input("Inserisci il percorso del file di TEST (.csv): ")
 
-    
-    # === 1) Split train/val da file iniziale ===
+    # === 1) Suddivisione train/validation ===
     holdout_split(
-        input_path=excel_file,
+        input_path=input_file,
         train_path=output_train,
         val_path=output_val,
         test_size=0.2,
@@ -21,11 +21,11 @@ def main():
         random_state=42
     )
 
-    output_clean_train = input("Inserisci il percorso per salvare il TRAIN pulito(.xlsx): ")
+    # === 2) Conversione e pulizia ===
+    output_clean_train = input("Inserisci il percorso per salvare il TRAIN pulito (.xlsx): ")
     output_clean_val = input("Inserisci il percorso per salvare il VALIDATION pulito (.xlsx): ")
     output_clean_test = input("Inserisci il percorso per salvare il TEST pulito (.xlsx): ")
 
-    # === 2) Pulizia e conversione colonne, ritorna combined_df ===
     combined_df = converti_valori_colonne(
         train_path=output_train,
         val_path=output_val,
@@ -35,11 +35,11 @@ def main():
         output_test_path=output_clean_test
     )
 
+    # === 3) Imputazione ===
     encoded_train_path = input("Inserisci il percorso per salvare il TRAIN encoded (.xlsx): ")
     encoded_val_path = input("Inserisci il percorso per salvare il VALIDATION encoded (.xlsx): ")
     encoded_test_path = input("Inserisci il percorso per salvare il TEST encoded (.xlsx): ")
 
-    # === 3) Imputazione sul combined_df ===
     df_train_encoded, df_val_encoded, df_test_encoded = imputazione(
         combined_df,
         output_train=encoded_train_path,
@@ -47,17 +47,22 @@ def main():
         output_test=encoded_test_path
     )
 
-    # === 4) Addestramento modello AdaBoost ===
+    # === 4) Addestramento, valutazione e creazione submission ===
+    submission_filename = input("Inserisci il nome del file di submission da creare (es. submission.csv): ")
+
     adaboost(
-        df_train_encoded,
-        df_val_encoded,
+        df_train_encoded=df_train_encoded,
+        df_val_encoded=df_val_encoded,
+        df_test_encoded=df_test_encoded,
         target_column='Transported',
+        id_column='PassengerId',
+        submission_filename=submission_filename,
         n_estimators=250,
         random_state=42
     )
 
-    print("Imputazione completata.")
+    print("Pipeline completata con successo.")
+
 
 if __name__ == "__main__":
     main()
-    print("Esecuzione completata con successo.")

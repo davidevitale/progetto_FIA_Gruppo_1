@@ -10,7 +10,7 @@ def holdout_split(
     random_state=42
 ):
     # === Caricamento del dataset ===
-    df = pd.read_excel(input_path)
+    df = pd.read_csv(input_path)
 
     # === Split holdout ===
     train_df, val_df = train_test_split(
