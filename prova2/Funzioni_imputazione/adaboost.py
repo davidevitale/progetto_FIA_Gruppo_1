@@ -9,38 +9,50 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay
 )
 
-def adaboost(df_train_encoded, df_val_encoded, target_column, n_estimators=250, random_state=42):
+def adaboost(
+    df_train_encoded,
+    df_val_encoded,
+    df_test_encoded,
+    target_column,
+    id_column,
+    submission_filename,
+    n_estimators=250,
+    random_state=42
+):
     """
-    Esegue classificazione AdaBoost con valutazione e grafico della confusion matrix.
+    Esegue classificazione AdaBoost, valutazione, grafico confusion matrix e salvataggio della submission.
 
     Args:
         df_train_encoded (pd.DataFrame): Dataset di training preprocessato e codificato.
         df_val_encoded (pd.DataFrame): Dataset di validazione preprocessato e codificato.
+        df_test_encoded (pd.DataFrame): Dataset di test preprocessato e codificato (senza target).
         target_column (str): Nome della colonna target da predire.
-        n_estimators (int): Numero di estimatori per AdaBoost. Default = 100.
+        id_column (str): Nome della colonna identificativa da usare nella submission.
+        submission_filename (str): Nome del file CSV di output.
+        n_estimators (int): Numero di estimatori per AdaBoost. Default = 250.
+        random_state (int): Seed per riproducibilità.
 
     Returns:
         model: Modello addestrato (AdaBoostClassifier)
     """
 
-    # 1. Split in X / y
-    X_train = df_train_encoded.drop(columns=[target_column])
+    # 1. Split in X / y per train e val (rimuovo target e id)
+    cols_to_drop = [target_column, id_column]
+
+    X_train = df_train_encoded.drop(columns=cols_to_drop)
     y_train = df_train_encoded[target_column]
 
-    X_val = df_val_encoded.drop(columns=[target_column])
+    X_val = df_val_encoded.drop(columns=cols_to_drop)
     y_val = df_val_encoded[target_column]
 
-    # 2. Inizializza modello AdaBoost (versione >= 1.2 → usa "estimator")
+    # 2. Inizializza modello AdaBoost
     base_model = DecisionTreeClassifier(max_depth=3, random_state=random_state)
     model = AdaBoostClassifier(
         estimator=base_model,
         n_estimators=n_estimators,
-        learning_rate=1.0,
+        learning_rate=0.5,
         random_state=random_state
     )
-
-    y_train = y_train.astype(bool)
-    y_val = y_val.astype(bool)
 
     # 3. Allenamento
     model.fit(X_train, y_train)
@@ -52,9 +64,7 @@ def adaboost(df_train_encoded, df_val_encoded, target_column, n_estimators=250, 
     print("\n=== Risultati AdaBoost ===")
     acc = accuracy_score(y_val, y_pred)
     print(f"Accuracy: {acc:.4f}\n")
-
     print("Classification Report:\n", classification_report(y_val, y_pred))
-
     cm = confusion_matrix(y_val, y_pred)
     print("Confusion Matrix:\n", cm)
 
@@ -64,5 +74,18 @@ def adaboost(df_train_encoded, df_val_encoded, target_column, n_estimators=250, 
     plt.title(f"Confusion Matrix (AdaBoost, n_estimators={n_estimators})")
     plt.grid(False)
     plt.show()
+
+    # 7. Predizione sul test (rimuovo solo id, target non c'è)
+    X_test = df_test_encoded.drop(columns=cols_to_drop)
+    y_test_pred = model.predict(X_test)
+
+    # 8. Preparo submission con SOLO id_column e target_column (predizioni)
+    submission = pd.DataFrame({
+        id_column: df_test_encoded[id_column],
+        target_column: y_test_pred.astype(int)
+    })
+
+    submission.to_csv(submission_filename, index=False)
+    print(f"Sample submission salvato in: {submission_filename}")
 
     return model

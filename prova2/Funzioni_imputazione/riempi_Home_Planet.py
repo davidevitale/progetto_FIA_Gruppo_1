@@ -33,7 +33,6 @@ def riempi_Home_Planet(combined_df):
         axis=1
     )
 
-
     # === 2. IMPUTAZIONE PER DECK ===
     cond_deck = combined_df['HomePlanet'].isna()
     combined_df.loc[cond_deck & (combined_df['Deck'] == 'G'), 'HomePlanet'] = 'Earth'
@@ -56,8 +55,6 @@ def riempi_Home_Planet(combined_df):
         if pd.isna(row['HomePlanet']) else row['HomePlanet'],
         axis=1
     )
-
-
 
     # Conta valori mancanti DOPO
     mancanti_dopo = combined_df['HomePlanet'].isna().sum()

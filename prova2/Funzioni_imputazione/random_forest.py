@@ -8,7 +8,7 @@ from sklearn.metrics import (
     ConfusionMatrixDisplay
 )
 
-def random_forest(df_train_encoded, df_val_encoded, target_column, n_estimators=500, max_depth=4, random_state=42):
+def random_forest(df_train_encoded, df_val_encoded, target_column, n_estimators=500, max_depth=6, random_state=42):
     """
     Esegue classificazione Random Forest con valutazione e grafico della confusion matrix.
 

@@ -6,8 +6,6 @@ from Funzioni_imputazione.riempi_Surname import riempi_Surname
 from Funzioni_imputazione.missing_values import knn_impute
 from Funzioni_imputazione.encoding import encoding
 from Funzioni_imputazione.riempi_cabinregion import riempi_cabinregion
-from Funzioni_imputazione.adaboost import adaboost
-from Funzioni_imputazione.random_forest import random_forest
 
 def imputazione(combined_df, output_train, output_val, output_test):
     combined_df = riempi_Home_Planet(combined_df)
@@ -16,14 +14,15 @@ def imputazione(combined_df, output_train, output_val, output_test):
     combined_df = riempi_cabinregion(combined_df)
     combined_df = riempi_Surname(combined_df)
     combined_df = riempi_Destination(combined_df)
+    print("Colonne prima di encoding:", combined_df.columns.tolist())
     combined_df = encoding(combined_df)
 
-    # Chiamo missing_values e assegno i dataframe ritornati
+    print("Colonne prima di knn_impute:", combined_df.columns.tolist())
     df_train_encoded, df_val_encoded, df_test_encoded = knn_impute(
         combined_df,
         output_train,
         output_val,
-        output_test
+        output_test,
     )
 
     return df_train_encoded, df_val_encoded, df_test_encoded

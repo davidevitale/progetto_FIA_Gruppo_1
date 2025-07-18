@@ -3,8 +3,8 @@ def riempi_cryo(combined_df):
     cryo_nan_before = combined_df['CryoSleep'].isna().sum()
 
     # Imputazione basata su NoSpending
-    combined_df.loc[combined_df['CryoSleep'].isna() & (combined_df['Expendures'] == 0),  'CryoSleep'] = 1
-    combined_df.loc[combined_df['CryoSleep'].isna() & (combined_df['Expendures'] > 0), 'CryoSleep'] = 0
+    combined_df.loc[combined_df['CryoSleep'].isna() & (combined_df['Expenditures'] == 0),  'CryoSleep'] = 1
+    combined_df.loc[combined_df['CryoSleep'].isna() & (combined_df['Expenditures'] > 0), 'CryoSleep'] = 0
 
 
     # Conta valori mancanti DOPO

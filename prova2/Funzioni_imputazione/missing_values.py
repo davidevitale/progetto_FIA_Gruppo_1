@@ -4,7 +4,8 @@ import pandas as pd
 import numpy as np
 
 def knn_impute(combined_df, output_train, output_val, output_test):
-    exclude_cols = ["IsTrain", "IsValidation", "IsTest", "Transported"]
+    exclude_cols = ["IsTrain", "IsValidation", "IsTest", "Transported", "PassengerId"]
+
 
     # Converti pd.NA -> np.nan
     combined_df = combined_df.replace({pd.NA: np.nan})
@@ -33,12 +34,12 @@ def knn_impute(combined_df, output_train, output_val, output_test):
     # De-standardizza
     df_imputed[numeric_cols] = scaler.inverse_transform(df_imputed[numeric_cols])
 
-    #Rendi interi i dati (approssimazione)
-    df_imputed[numeric_cols] = df_imputed[numeric_cols].round().astype(np.int64)
-
     # Aggiungi colonne non numeriche
     for col in exclude_cols:
         df_imputed[col] = combined_df[col]
+
+    #Rendi interi i dati (approssimazione)
+    df_imputed[numeric_cols] = df_imputed[numeric_cols].round().astype(np.int64)
 
     # Suddividi i dataset
     df_train = df_imputed[df_imputed["IsTrain"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])
@@ -50,9 +51,10 @@ def knn_impute(combined_df, output_train, output_val, output_test):
     df_val.to_excel(output_val, index=False)
     df_test.to_excel(output_test, index=False)
 
-    print("\n✅ File salvati correttamente:")
+    print("File salvati correttamente:")
     print(f"- Train: {output_train}")
     print(f"- Val:   {output_val}")
     print(f"- Test:  {output_test}")
 
     return df_train, df_val, df_test
+

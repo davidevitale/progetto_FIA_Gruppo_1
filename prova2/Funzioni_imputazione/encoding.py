@@ -1,32 +1,35 @@
-import numpy as np
+
 import pandas as pd
-from sklearn.preprocessing import OrdinalEncoder
+from sklearn.preprocessing import OneHotEncoder
 
 def encoding(combined_df):
     # 1. Seleziona il train set
     train_mask = combined_df['IsTrain'] == 1
 
-    # Estrai il PassengerId del test set da combined_df
-    passenger_id_test = combined_df.loc[combined_df['IsTest'] == 1, 'PassengerId'].copy()
-# Poi fai encoding/imputazione su df_test senza modificarlo
+    # 3. Rimuovi colonne inutili inclusa PassengerId dal DataFrame principale
+    combined_df = combined_df.drop(columns=['Surname', 'Group', 'Expenditures'])
 
+    # 4. Colonne categoriche
+    categorical = ['Deck', 'HomePlanet', 'Destination', 'Side', 'Cabin_region']
 
-    # 2. Rimuovi colonne inutili
-    combined_df = combined_df.drop(columns=['Surname', 'Group', 'PassengerId', 'Expendures'])
-
-    # 3. Colonne categoriche
-    categorical = ['Deck', 'HomePlanet', 'Destination', 'Side']
-
-    # 4. Standardizza i NaN
+    # 5. Standardizza i NaN per le categoriche
     combined_df[categorical] = combined_df[categorical].astype('object')
 
-    # 5. OrdinalEncoder: unknown_value deve essere un intero
-    encoder = OrdinalEncoder(handle_unknown='use_encoded_value', unknown_value=-1)
+    # 6. OneHotEncoder con gestione valori sconosciuti
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
 
-    # 6. Fit solo sul train
+    # 7. Fit solo sul train set
     encoder.fit(combined_df.loc[train_mask, categorical])
 
-    # 7. Trasforma tutto il dataset
-    combined_df[categorical] = encoder.transform(combined_df[categorical])
+    # 8. Trasforma tutto il dataset
+    encoded_array = encoder.transform(combined_df[categorical])
+    encoded_df = pd.DataFrame(encoded_array,
+                              columns=encoder.get_feature_names_out(categorical),
+                              index=combined_df.index)
 
+    # 9. Rimuovi colonne categoriche originali e unisci le nuove
+    combined_df = combined_df.drop(columns=categorical)
+    combined_df = pd.concat([combined_df, encoded_df], axis=1)
+
+    # 10. Ritorna il DataFrame codificato e la serie PassengerId del test set
     return combined_df

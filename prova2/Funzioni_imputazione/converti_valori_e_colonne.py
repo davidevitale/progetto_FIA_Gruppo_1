@@ -3,12 +3,11 @@ import numpy as np
 
 def converti_valori_colonne(train_path, val_path, test_path,
                              output_train_path, output_val_path, output_test_path):
-    # === 1. Carica i file ===
     train_df = pd.read_excel(train_path)
     val_df   = pd.read_excel(val_path)
     test_df  = pd.read_csv(test_path)
 
-    # === 2. Aggiungi flag identificativi ===
+    # Flag identificativi
     train_df['IsTrain'] = True
     train_df['IsValidation'] = False
     train_df['IsTest'] = False
@@ -21,10 +20,9 @@ def converti_valori_colonne(train_path, val_path, test_path,
     test_df['IsValidation'] = False
     test_df['IsTest'] = True
 
-    # === 3. Unisci i tre dataset ===
     combined_df = pd.concat([train_df, val_df, test_df], ignore_index=True)
 
-    # === 4. Feature Engineering ===
+    # Feature engineering
     combined_df['Group'] = combined_df['PassengerId'].str.split('_').str[0].astype(int)
     group_counts = combined_df['Group'].value_counts()
     combined_df['Group_size'] = combined_df['Group'].map(group_counts)
@@ -50,20 +48,25 @@ def converti_valori_colonne(train_path, val_path, test_path,
 
     spesa_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
     combined_df[spesa_cols] = combined_df[spesa_cols].fillna(0)
-    combined_df['Expendures'] = combined_df[spesa_cols].sum(axis=1)
+    combined_df['Expenditures'] = combined_df[spesa_cols].sum(axis=1)  # ← nome corretto
 
-    bool_cols = combined_df.select_dtypes(include=['bool']).columns
-    combined_df[bool_cols] = combined_df[bool_cols].astype(int)
+    #bool_cols = combined_df.select_dtypes(include=['bool']).columns
+    #combined_df[bool_cols] = combined_df[bool_cols].astype(int)
+    combined_df['Transported'] = combined_df['Transported'].map({True: 1, False: 0})
 
-    # === 5. Ritaglia i dataset finali ===
-    new_train = combined_df[combined_df['IsTrain'] == 1].copy()
-    new_val   = combined_df[combined_df['IsValidation'] == 1].copy()
-    new_test  = combined_df[combined_df['IsTest'] == 1].copy()
+    # Ricava i DataFrame finali
+    df_train = combined_df[combined_df['IsTrain'] == 1].drop(columns=['IsTrain', 'IsValidation', 'IsTest'])
+    df_val   = combined_df[combined_df['IsValidation'] == 1].drop(columns=['IsTrain', 'IsValidation', 'IsTest'])
+    df_test  = combined_df[combined_df['IsTest'] == 1].drop(columns=['IsTrain', 'IsValidation', 'IsTest'])
 
-    # === 6. Salva i file finali ===
-    new_train.to_excel(output_train_path, index=False)
-    new_val.to_excel(output_val_path, index=False)
-    new_test.to_excel(output_test_path, index=False)
+    # Salva
+    df_train.to_excel(output_train_path, index=False)
+    df_val.to_excel(output_val_path, index=False)
+    df_test.to_excel(output_test_path, index=False)
 
-    print("File salvati correttamente.")
+    print("File salvati correttamente:")
+    print(f"- Train: {output_train_path}")
+    print(f"- Val:   {output_val_path}")
+    print(f"- Test:  {output_test_path}")
+
     return combined_df

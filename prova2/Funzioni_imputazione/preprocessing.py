@@ -3,11 +3,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 
-# === Input dinamico per il file ===
-file_path = input("Inserisci il percorso del file Excel (.xlsx) da caricare: ")
+#df = pd.read_excel('C:/Users/Standard/Desktop/Titanic/Titanic/train_holdout.xlsx')
 
-# Caricamento del DataFrame
-df = pd.read_excel(file_path)
+# Ora carichi uno dei file di output per lavorare con il DataFrame
+df = pd.read_excel('C:/Users/dvita/Desktop/TITANIC/train.xlsx')
 
 # Nuova feature - Group (presupponendo che 'PassengerId' sia nel formato '123_45')
 df['Group'] = df['PassengerId'].apply(lambda x: x.split('_')[0]).astype(int)
@@ -115,26 +114,22 @@ plt.subplots_adjust(hspace=0.4)  # aumenta lo spazio verticale tra i plot
 plt.show()
 
 
-df['Expendures'] = df[['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].sum(axis=1) #skipna=True)
-
-
-
-
+df['Expenditures'] = df[['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']].sum(axis=1) #skipna=True)
 
 # Calcolo della mediana
-expendures_median = df['Expendures'].median()
-print(expendures_median)
+expenditures_median = df['Expenditures'].median()
+print(expenditures_median)
 
 plt.figure(figsize=(10, 6))
 sns.histplot(data=df, x='Expendures', bins=30, kde=False, hue='Transported', palette=palette)
-plt.title('Distribuzione delle spese totali (Expendures)')
-plt.xlabel('Expendures')
+plt.title('Distribuzione delle spese totali (Expenditures)')
+plt.xlabel('Expenditures')
 plt.ylabel('Numero di passeggeri')
 plt.show()
 
 # Filtro per Expendures < mediana
-filtered_data = df[df['Expendures'] <= expendures_median]
-x2 = df[df['Expendures'] > expendures_median]
+filtered_data = df[df['Expenditures'] <= expenditures_median]
+x2 = df[df['Expenditures'] > expenditures_median]
 
 # Conta quanti sono Transported = True e False
 transported_counts1 = filtered_data['Transported'].value_counts()
@@ -150,13 +145,13 @@ print(transported_counts2)
 cryo_false = df[df['CryoSleep'] == False]
 
 # Calcola la mediana delle spese
-mediana_expendures = cryo_false['Expendures'].median()
+mediana_expenditures = cryo_false['Expenditures'].median()
 
 # Stampa il risultato
-print(f"Mediana delle Expendures per passeggeri con CryoSleep = False: {mediana_expendures}")
+print(f"Mediana delle Expendures per passeggeri con CryoSleep = False: {mediana_expenditures}")
 
 # Creazione della feature binaria
-df['Expendures'] = (df['Expendures'] > expendures_median)
+df['Expenditures'] = (df['Expendures'] > expenditures_median)
 
 cat_feats = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Expendures']
 
