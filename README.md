@@ -18,17 +18,9 @@ Il progetto implementa una pipeline completa di preprocessing, imputazione, codi
 │   ├── knn_impute.py  
 │   └── encoding.py  
 │  
-├── studio/  
-│   ├── studio_cryo_e_spending.py  
-│   ├── studio_Homeplanet_Surname.py  
-│   ├── studio_Surname_Group.py  
-│   └── Studio_Vip_group.py  
-│  
 ├── converti_valori_e_colonne.py  
 ├── imputazione.py  
-├── preprocessing.py  
 ├── adaboost.py  
-├── random_forest.py  
 ├── missing_values.py  
 ├── main.py  
 
