@@ -81,22 +81,22 @@ Il progetto implementa una pipeline completa di preprocessing, imputazione, codi
 
 ## Requisiti
 
-Assicurati di avere installato le dipendenze con:
-packaging==24.2
-pandas==2.2.3
-numpy==2.0.2
-scikit-learn==1.3.0
-openpyxl==3.1.5
-matplotlib==3.9.4
-seaborn==0.12.2
-pyparsing==3.2.1
-contourpy==1.3.0
-cycler==0.12.1
-et_xmlfile==2.0.0
-fonttools==4.55.3
-kiwisolver==1.4.7
-pillow==11.1.0
-python-dateutil==2.9.0.post0
+packaging==24.2  
+pandas==2.2.3  
+numpy==2.0.2  
+scikit-learn==1.3.0  
+openpyxl==3.1.5  
+matplotlib==3.9.4  
+seaborn==0.12.2  
+pyparsing==3.2.1  
+contourpy==1.3.0  
+cycler==0.12.1  
+et_xmlfile==2.0.0  
+fonttools==4.55.3  
+kiwisolver==1.4.7  
+pillow==11.1.0  
+python-dateutil==2.9.0.post0  
+
 
 ---
 
