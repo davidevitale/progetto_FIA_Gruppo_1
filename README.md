@@ -126,7 +126,6 @@ A valle della pipeline, il progetto produce i seguenti file:
 - `test_encoded.xlsx` — dataset di test trasformato, pronto per la predizione
 - `submission.csv` — file pronto per la sottomissione su Kaggle, con `PassengerId` e `Transported`
 
-Questi file vengono generati automaticamente dai moduli `imputazione.py`, `knn_impute.py` e dai modelli finali (`adaboost.py`, `random_forest.py`).
 
 ---
 
