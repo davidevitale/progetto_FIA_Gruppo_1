@@ -8,96 +8,114 @@ Il progetto implementa una pipeline completa di preprocessing, imputazione, codi
 
 ## Struttura del progetto
 
-```
-├── Funzioni_imputazione/
-│   ├── riempi_Home_Planet.py
-│   ├── riempi_cryo.py
-│   ├── riempi_deck.py
-│   ├── riempi_Destination.py
-│   ├── riempi_Surname.py
-│   ├── riempi_cabinregion.py
-│   ├── knn_impute.py
-│   └── encoding.py
-│
-├── studio/
-│   ├── studio_cryo_e_spending.py
-│   ├── studio_Homeplanet_Surname.py
-│   ├── studio_Surname_Group.py
-│   └── Studio_Vip_group.py
-│
-├── converti_valori_e_colonne.py
-├── imputazione.py
-├── preprocessing.py
-├── adaboost.py
-├── random_forest.py
-├── missing_values.py
-```
+├── Funzioni_imputazione/  
+│   ├── riempi_Home_Planet.py  
+│   ├── riempi_cryo.py  
+│   ├── riempi_deck.py  
+│   ├── riempi_Destination.py  
+│   ├── riempi_Surname.py  
+│   ├── riempi_cabinregion.py  
+│   ├── knn_impute.py  
+│   └── encoding.py  
+│  
+├── studio/  
+│   ├── studio_cryo_e_spending.py  
+│   ├── studio_Homeplanet_Surname.py  
+│   ├── studio_Surname_Group.py  
+│   └── Studio_Vip_group.py  
+│  
+├── converti_valori_e_colonne.py  
+├── imputazione.py  
+├── preprocessing.py  
+├── adaboost.py  
+├── random_forest.py  
+├── missing_values.py  
+├── main.py  
 
 ---
 
-## 🔁 Pipeline
+## Pipeline operativa
 
-### 1. **Caricamento e trasformazione dati**
-- `converti_valori_e_colonne.py`  
-  Unisce i dataset e costruisce nuove feature (`Group`, `Cabin_region`, `Expenditures`, `Surname`, ecc.).
+1. **Suddivisione Holdout**  
+   - Split del dataset iniziale in train e validation (80/20 stratificato su 'Transported').
 
-### 2. **Imputazione valori mancanti**
-- `imputazione.py`: applica in ordine:
-  - `riempi_Home_Planet.py`: group, deck, surname
-  - `riempi_cryo.py`: spesa → CryoSleep
-  - `riempi_deck.py`: moda del gruppo
-  - `riempi_Destination.py`: cognome e pianeta
-  - `riempi_Surname.py`: gruppi coerenti
-  - `riempi_cabinregion.py`: ultima lettera della cabina
-  - `encoding.py`: One-Hot encoding
-  - `knn_impute.py`: imputazione finale numerica via KNN
+2. **Feature Engineering e Pulizia**  
+   - Creazione di nuove colonne: Group, Cabin_region, Expenditures, Surname, ecc.  
+   - Conversione dei dati per uniformare il formato.
 
-### 3. **Visualizzazione e analisi dei dati**
-- Script nella cartella `studio/` e `preprocessing.py` giustificano ogni strategia con analisi grafiche (heatmap, istogrammi, countplot...).
+3. **Imputazione valori mancanti**  
+   - Surname / Group / Deck → HomePlanet  
+   - Spese → CryoSleep  
+   - Group → Deck  
+   - Pianeta + Cognome → Destination  
+   - Regioni cabina → Cabin_region  
+   - KNN per imputare valori numerici residui.
 
-### 4. **Modellazione e classificazione**
-- `adaboost.py`: AdaBoost con DecisionTree
-- `random_forest.py`: classificatore RandomForest
+4. **Codifica**
+   - One-hot encoding delle variabili categoriche.
+
+5. **Addestramento e Predizione**  
+   - AdaBoost (con 300 estimatori).  
+   - Valutazione sul validation set.  
+   - Creazione file di submission .csv per Kaggle.
 
 ---
 
-## Come eseguire
+## Come eseguire il codice
 
-1. Converti e unisci i dati:
-```bash
-python converti_valori_e_colonne.py
-```
+1. Apri il terminale nella cartella principale del progetto.  
+2. Esegui il comando:
 
-2. Prepara il dataset completo:
-```bash
-python imputazione.py
-```
+   `python main.py`
 
-3. Esegui un modello:
-```bash
-python adaboost.py
-# oppure
-python random_forest.py
-```
+3. Il programma ti chiederà, passo dopo passo:
+   - Percorso del file iniziale (.csv)
+   - Output di train e validation (.xlsx)
+   - File di test (.csv)
+   - Output dei file puliti e trasformati (.xlsx)
+   - Output dei file encoded (.xlsx)
+   - Nome del file di submission da creare (es: submission.csv)
+
+---
+
+## Output generati
+
+- File di train/validation/test trasformati (.xlsx)  
+- File encoded (.xlsx)  
+- File di submission .csv pronto per upload su Kaggle  
+- Confusion matrix del validation set
 
 ---
 
 ## Requisiti
 
-- Python 3.8+
-- pandas
-- numpy
-- scikit-learn
-- matplotlib
-- seaborn
-- openpyxl
-- fpdf (opzionale per export PDF)
+Assicurati di avere installato le dipendenze con:
+packaging==24.2
+pandas==2.2.3
+numpy==2.0.2
+scikit-learn==1.3.0
+openpyxl==3.1.5
+matplotlib==3.9.4
+seaborn==0.12.2
+pyparsing==3.2.1
+contourpy==1.3.0
+cycler==0.12.1
+et_xmlfile==2.0.0
+fonttools==4.55.3
+kiwisolver==1.4.7
+pillow==11.1.0
+python-dateutil==2.9.0.post0
 
-Installa con:
+---
 
-```bash
-pip install -r requirements.txt
-```
+## 🔧 Parametri personalizzabili
+
+| Parametro       | Descrizione                         | Default       |
+|-----------------|-------------------------------------|---------------|
+| test_size       | Percentuale per validation          | 0.2           |
+| n_estimators    | Stimatori del modello AdaBoost      | 300           |
+| target_column   | Variabile da predire                | Transported   |
+| id_column       | Identificativo per la submission    | PassengerId   |
 
 ---
 
@@ -107,25 +125,13 @@ Questo progetto ha permesso di costruire una pipeline completa di preprocessing 
 
 Grazie a un'analisi esplorativa approfondita e all'uso di funzioni modulari, ogni variabile mancante è stata gestita con logiche coerenti e motivabili:
 
-- Le imputazioni si sono basate su **informazioni strutturali** (Group, Surname, Deck), **logiche deduttive** (es. spesa → CryoSleep), e **metodi statistici** (KNN).
+- Le imputazioni si sono basate su informazioni strutturali (Group, Surname, Deck), logiche deduttive (es. spesa → CryoSleep), e metodi statistici (KNN).
 - L'utilizzo di grafici (heatmap, countplot, pie chart) ha supportato la costruzione e la validazione di ogni strategia.
 - Le codifiche categoriali sono state gestite con attenzione al data leakage, e il modello è stato validato separando train/val/test.
 
-I modelli **AdaBoost** e **Random Forest** hanno dimostrato buone prestazioni. In particolare, AdaBoost ha beneficiato della qualità del preprocessing e ha restituito la migliore accuratezza sul validation set.
+I modelli AdaBoost e Random Forest hanno dimostrato buone prestazioni.
+In particolare, AdaBoost ha beneficiato della qualità del preprocessing e ha restituito la migliore accuratezza sul validation set.
 
 Il progetto ha rafforzato la comprensione delle buone pratiche in ML, dalla gestione dei dati mancanti alla produzione di un modello solido e pronto per la submission.
 
 ---
-
-## Output
-
-A valle della pipeline, il progetto produce i seguenti file:
-
-- `train_encoded.xlsx` — dataset di training preprocessato, codificato e imputato
-- `val_encoded.xlsx` — validation set separato per la valutazione dei modelli
-- `test_encoded.xlsx` — dataset di test trasformato, pronto per la predizione
-- `submission.csv` — file pronto per la sottomissione su Kaggle, con `PassengerId` e `Transported`
-
-
----
-
