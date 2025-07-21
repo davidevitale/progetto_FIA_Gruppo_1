@@ -105,7 +105,8 @@ python-dateutil==2.9.0.post0
 | Parametro       | Descrizione                         | Default       |
 |-----------------|-------------------------------------|---------------|
 | test_size       | Percentuale per validation          | 0.2           |
-| n_estimators    | Stimatori del modello AdaBoost      | 300           |
+| n_estimators    | Stimatori del modello AdaBoost      | 500           |
+| max_depth       | Profondità albero                   | 3             |
 | target_column   | Variabile da predire                | Transported   |
 | id_column       | Identificativo per la submission    | PassengerId   |
 
