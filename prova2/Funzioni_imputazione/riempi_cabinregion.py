@@ -48,6 +48,9 @@ def riempi_cabinregion(combined_df):
 
     combined_df[col_name] = combined_df[col_name].astype('Int64')
     mancanti_dopo = combined_df[col_name].isna().sum()
-    print(f"[{col_name}] Valori mancanti prima: {mancanti_prima} | dopo: {mancanti_dopo}")
+   
+    print(f"Valori mancanti in '{col_name}' prima: {mancanti_prima}")
+    print(f"Valori mancanti in '{col_name}' dopo:  {mancanti_dopo}")
+    print(f"Valori {col_name} riempiti: {mancanti_prima - mancanti_dopo}")
 
     return combined_df

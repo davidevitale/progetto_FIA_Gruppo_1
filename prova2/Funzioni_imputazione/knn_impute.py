@@ -9,8 +9,18 @@ def knn_impute(combined_df, output_train, output_val, output_test):
     # Converti pd.NA -> np.nan
     combined_df = combined_df.replace({pd.NA: np.nan})
 
-    # Seleziona colonne numeriche
-    numeric_cols = combined_df.drop(columns=exclude_cols).select_dtypes(include=[np.number]).columns.tolist()
+        # rileva tutte le colonne con solo valori {0,1} (dopo aver tolto NaN)
+    dummy_cols = [
+        c for c in combined_df.columns 
+        if combined_df[c].dropna().isin([0,1]).all() 
+        and combined_df[c].dtype in ['int64','float64']
+    ]
+
+    # escludile dallo scaling
+    cols_to_drop = exclude_cols + dummy_cols
+    numeric_cols = combined_df.drop(columns=cols_to_drop) \
+                            .select_dtypes(include=[np.number]) \
+                            .columns.tolist()
 
     # Standardizza solo le colonne numeriche
     scaler = StandardScaler()
@@ -34,11 +44,19 @@ def knn_impute(combined_df, output_train, output_val, output_test):
     df_imputed[numeric_cols] = scaler.inverse_transform(df_imputed[numeric_cols])
 
     # Aggiungi colonne non numeriche
-    for col in exclude_cols:
+    for col in cols_to_drop:
         df_imputed[col] = combined_df[col]
 
     #Rendi interi i dati (approssimazione)
     df_imputed[numeric_cols] = df_imputed[numeric_cols].round().astype(np.int64)
+
+    spesa_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
+     # Ora aggiungi le colonne log per le spese (dopo imputazione)
+    for col in spesa_cols:
+        df_imputed[f'Log_{col}'] = np.log1p(df_imputed[col])
+
+    # Droppa le colonne originali di spesa, tieni solo le log
+    df_imputed = df_imputed.drop(columns=spesa_cols)
 
     # Suddividi i dataset
     df_train_encoded = df_imputed[df_imputed["IsTrain"] == 1].drop(columns=["IsTrain", "IsValidation", "IsTest"])

@@ -1,12 +1,12 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-import numpy as np
 
-#df = pd.read_excel('C:/Users/Standard/Desktop/Titanic/Titanic/train_holdout.xlsx')
+# Chiedo all'utente di inserire il percorso del file Excel
+file_path = input("Inserisci il percorso completo del file Excel (ad esempio C:/Users/dvita/Desktop/TITANIC/train.csv): ")
 
-# Ora carichi uno dei file di output per lavorare con il DataFrame
-df = pd.read_excel('C:/Users/dvita/Desktop/TITANIC/train.xlsx')
+# Carico il DataFrame dal percorso inserito
+df = pd.read_csv(file_path)
 
 # Nuova feature - Group (presupponendo che 'PassengerId' sia nel formato '123_45')
 df['Group'] = df['PassengerId'].apply(lambda x: x.split('_')[0]).astype(int)
@@ -14,7 +14,6 @@ df['Group'] = df['PassengerId'].apply(lambda x: x.split('_')[0]).astype(int)
 # Nuova feature - Group size
 group_counts = df['Group'].value_counts()
 df['Group_size'] = df['Group'].map(group_counts)
-
 
 # Estrae il cognome dalla colonna Name
 df['Surname'] = df['Name'].str.split().str[-1]
@@ -27,7 +26,7 @@ df['Transported'].value_counts().plot.pie(
     autopct='%1.1f%%',
     shadow=True,
     textprops={'fontsize': 16},
-    colors=[palette[False], palette[True]]
+    colors=[palette[True], palette[False]]
 ).set_title("Target distribution")
 
 plt.ylabel('')  # Rimuove etichetta dell'asse y
@@ -56,7 +55,6 @@ sns.countplot(data=df, x='Solo', hue='Transported', palette=palette)
 plt.title('Passenger travelling solo or not')
 plt.ylim([0,3000])
 
-
 # Estrae le componenti della Cabina
 df[['Deck', 'CabinNum', 'Side']] = df['Cabin'].str.split('/', expand=True)
 df['CabinNum'] = pd.to_numeric(df['CabinNum'], errors='coerce')
@@ -81,16 +79,6 @@ df['Cabin_region4'] = ((df['CabinNum'] >= 900) & (df['CabinNum'] < 1200)).astype
 df['Cabin_region5'] = ((df['CabinNum'] >= 1200) & (df['CabinNum'] < 1500)).astype(int)
 df['Cabin_region6'] = ((df['CabinNum'] >= 1500) & (df['CabinNum'] < 1800)).astype(int)
 df['Cabin_region7'] = (df['CabinNum'] >= 1800).astype(int)
-
-
-df['AgeGroup'] = df['Age'].apply(
-    lambda age: np.nan if pd.isna(age) else
-                '0-18' if age <= 18 else
-                '19-25' if age <= 25 else
-                '25+'
-)
-
-
 
 exp_feats = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
 
@@ -121,13 +109,13 @@ expenditures_median = df['Expenditures'].median()
 print(expenditures_median)
 
 plt.figure(figsize=(10, 6))
-sns.histplot(data=df, x='Expendures', bins=30, kde=False, hue='Transported', palette=palette)
+sns.histplot(data=df, x='Expenditures', bins=30, kde=False, hue='Transported', palette=palette)
 plt.title('Distribuzione delle spese totali (Expenditures)')
 plt.xlabel('Expenditures')
 plt.ylabel('Numero di passeggeri')
 plt.show()
 
-# Filtro per Expendures < mediana
+# Filtro per Expenditures < mediana
 filtered_data = df[df['Expenditures'] <= expenditures_median]
 x2 = df[df['Expenditures'] > expenditures_median]
 
@@ -136,9 +124,9 @@ transported_counts1 = filtered_data['Transported'].value_counts()
 transported_counts2 = x2['Transported'].value_counts()
 
 # Stampa i conteggi
-print("Conto di 'Transported' per passeggeri con Expendures < mediana:")
+print("Conto di 'Transported' per passeggeri con Expenditures < mediana:")
 print(transported_counts1)
-print("Conto di 'Transported' per passeggeri con Expendures > mediana:")
+print("Conto di 'Transported' per passeggeri con Expenditures > mediana:")
 print(transported_counts2)
 
 # Filtro i passeggeri con CryoSleep = False
@@ -148,12 +136,12 @@ cryo_false = df[df['CryoSleep'] == False]
 mediana_expenditures = cryo_false['Expenditures'].median()
 
 # Stampa il risultato
-print(f"Mediana delle Expendures per passeggeri con CryoSleep = False: {mediana_expenditures}")
+print(f"Mediana delle Expenditures per passeggeri con CryoSleep = False: {mediana_expenditures}")
 
 # Creazione della feature binaria
-df['Expenditures'] = (df['Expendures'] > expenditures_median)
+df['Expenditures'] = (df['Expenditures'] > expenditures_median)
 
-cat_feats = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Expendures']
+cat_feats = ['HomePlanet', 'CryoSleep', 'Destination', 'VIP', 'Expenditures']
 
 # Prima figura con i primi 3 grafici
 plt.figure(figsize=(10, 12))
@@ -192,33 +180,6 @@ plt.title('Age distribution')
 plt.xlabel('Age (years)')
 plt.show()
 
-# # 1. Crea la colonna AgeGroup (senza funzione esterna)
-# df['AgeGroup'] = df['Age'].apply(
-#     lambda age: 'Unknown' if pd.isna(age) else
-#                 '0-18' if age <= 18 else
-#                 '19-25' if age <= 25 else
-#                 '25+'
-# )
-
-# # 2. Calcola le percentuali di 'Transported' per fascia d'età
-# age_group_stats = data.groupby('AgeGroup')['Transported'].value_counts(normalize=True).unstack().fillna(0) * 100
-# age_group_stats = age_group_stats.round(2)
-
-# # 3. Mostra la tabella in console
-# print("Percentuali di passeggeri 'Transported' per fascia d'età:\n")
-# print(age_group_stats)
-
-# # 4. Grafico a barre delle percentuali di 'True'
-# plt.figure(figsize=(8, 5))
-# age_group_stats[True].plot(kind='bar', color='lightblue')
-# plt.title("Percentuale di 'Transported = True' per fascia d'età")
-# plt.ylabel("Percentuale (%)")
-# plt.xlabel("Fascia d'età")
-# plt.xticks(rotation=0)
-# plt.ylim(0, 100)
-# plt.tight_layout()
-# plt.show()
-
 # Calcola il numero di HomePlanet unici per gruppo
 df_group_hp = df.groupby('Group')['HomePlanet'].nunique().reset_index(name='UniqueHomePlanets')
 
@@ -251,7 +212,6 @@ hp_dest=df.groupby(['HomePlanet','Destination'])['Destination'].size().unstack()
 # Heatmap of missing values
 plt.figure(figsize=(10,4))
 sns.heatmap(hp_dest.T, annot=True, fmt='g', cmap='coolwarm')
-
 
 # 1. Conta quante volte ogni cognome appare (escludendo NaN)
 surname_counts = df['Surname'].value_counts()
@@ -299,14 +259,14 @@ print(f"Percentuale media di VIP coerenti all'interno dei gruppi: {media_percent
 # Filtra tutti i passeggeri con CryoSleep = True
 cryosleep_true = df[df['CryoSleep'] == True]
 
-# Calcola quanti hanno Expendures == 0 all'interno di quelli in CryoSleep
-num_zero_expendures = (cryosleep_true['Expendures'] == 0).sum()
+# Calcola quanti hanno Expenditures == 0 all'interno di quelli in CryoSleep
+num_zero_expenditures = (cryosleep_true['Expenditures'] == 0).sum()
 
 # Totale passeggeri in CryoSleep
 total_cryosleep = len(cryosleep_true)
 
 # Percentuale
-percentuale = num_zero_expendures / total_cryosleep * 100
+percentuale = num_zero_expenditures / total_cryosleep * 100
 
 # Stampa il risultato
-print(f"Percentuale di passeggeri con Expendures = 0 tra quelli con CryoSleep = True: {percentuale:.2f}%")
+print(f"Percentuale di passeggeri con Expenditures = 0 tra quelli con CryoSleep = True: {percentuale:.2f}%")

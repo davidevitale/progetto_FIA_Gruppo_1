@@ -1,22 +1,19 @@
-
 import pandas as pd
 from sklearn.preprocessing import OneHotEncoder
+import numpy as np
 
 def encoding(combined_df):
     # 1. Seleziona il train set
     train_mask = combined_df['IsTrain'] == 1
 
     # 3. Rimuovi colonne inutili
-    combined_df = combined_df.drop(columns=['Surname', 'Group', 'Expenditures'])
+    combined_df = combined_df.drop(columns=['Surname', 'Group', 'Expenditures', 'VIP'])
 
     # 4. Colonne categoriche
     categorical = ['Deck', 'HomePlanet', 'Destination', 'Side', 'Cabin_region']
 
-    # 5. Standardizza i NaN per le categoriche
-    combined_df[categorical] = combined_df[categorical].astype('object')
-
     # 6. OneHotEncoder con gestione valori sconosciuti
-    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False, drop = 'first')
 
     # 7. Fit solo sul train set
     encoder.fit(combined_df.loc[train_mask, categorical])

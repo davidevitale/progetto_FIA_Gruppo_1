@@ -31,6 +31,13 @@ def riempi_Destination(combined_df):
     cond_earth = (combined_df['Destination'].isna()) & (combined_df['HomePlanet'] == 'Earth')
     combined_df.loc[cond_earth, 'Destination'] = 'TRAPPIST-1e'
 
+        # === 4. IMPUTAZIONE FINALE CON LA MODA DAL TRAIN SET ===
+    # Calcola la moda su 'Destination' solo nel train
+    moda = train_df['Destination'].mode()
+    if not moda.empty:
+        moda = moda[0]
+        combined_df['Destination'] = combined_df['Destination'].fillna(moda)
+
     # Conta valori mancanti DOPO
     mancanti_dopo = combined_df['Destination'].isna().sum()
 

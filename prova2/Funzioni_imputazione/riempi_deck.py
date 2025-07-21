@@ -28,8 +28,10 @@ def riempi_deck(combined_df):
 
     CD_aft = combined_df['Deck'].isna().sum()
 
-    print(f"Deck missing values before: {CD_bef}")
-    print(f"Deck missing values after:  {CD_aft}")
+    
+    print(f"Valori mancanti in 'Deck' prima: {CD_bef}")
+    print(f"Valori mancanti in 'Deck' dopo:  {CD_aft}")
+    print(f"Valori Deck riempiti: {CD_bef - CD_aft}")
 
     return combined_df
 

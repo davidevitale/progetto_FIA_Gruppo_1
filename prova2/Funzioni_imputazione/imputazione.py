@@ -6,6 +6,7 @@ from Funzioni_imputazione.riempi_Surname import riempi_Surname
 from Funzioni_imputazione.knn_impute import knn_impute
 from Funzioni_imputazione.encoding import encoding
 from Funzioni_imputazione.riempi_cabinregion import riempi_cabinregion
+from Funzioni_imputazione.riempi_side import riempi_side
 
 def imputazione(combined_df, output_train, output_val, output_test):
     combined_df = riempi_Home_Planet(combined_df)
@@ -14,8 +15,9 @@ def imputazione(combined_df, output_train, output_val, output_test):
     combined_df = riempi_cabinregion(combined_df)
     combined_df = riempi_Surname(combined_df)
     combined_df = riempi_Destination(combined_df)
+    combined_df = riempi_side(combined_df)
     combined_df = encoding(combined_df)
-
+    
     df_train_encoded, df_val_encoded, df_test_encoded = knn_impute(
         combined_df,
         output_train,

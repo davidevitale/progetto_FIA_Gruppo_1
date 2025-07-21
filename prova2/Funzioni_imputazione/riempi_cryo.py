@@ -9,6 +9,10 @@ def riempi_cryo(combined_df):
     # Conta valori mancanti DOPO
     cryo_nan_after = combined_df['CryoSleep'].isna().sum()
 
-    print(f"[CryoSleep] Valori mancanti prima: {cryo_nan_before}, dopo: {cryo_nan_after}")
+    print(f"Valori mancanti in 'CryoSleep' prima: {cryo_nan_before}")
+    print(f"Valori mancanti in 'CryoSleep' dopo:  {cryo_nan_after}")
+    print(f"Valori CryoSleep riempiti: {cryo_nan_before - cryo_nan_after}")
+    
     return combined_df
+
 

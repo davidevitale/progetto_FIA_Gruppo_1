@@ -16,7 +16,7 @@ def adaboost(
     target_column,
     id_column,
     submission_filename,
-    n_estimators=300,
+    n_estimators=500,
 ):
     """
     Esegue classificazione AdaBoost, valutazione, grafico confusion matrix e salvataggio della submission.
@@ -44,7 +44,7 @@ def adaboost(
     y_val = df_val_encoded[target_column]
 
     # 2. Inizializza modello AdaBoost
-    base_model = DecisionTreeClassifier(max_depth=4)
+    base_model = DecisionTreeClassifier(max_depth=3)
     model = AdaBoostClassifier(
         estimator=base_model,
         n_estimators=n_estimators,
