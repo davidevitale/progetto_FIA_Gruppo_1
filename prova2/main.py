@@ -2,9 +2,10 @@ from Funzioni_imputazione.converti_valori_e_colonne import converti_valori_colon
 from Funzioni_imputazione.imputazione import imputazione
 from Funzioni_imputazione.adaboost import adaboost
 from hold import holdout_split
-
+import time
 
 def main():
+
     # === Input dei percorsi dei file ===
     input_file = input("Inserisci il percorso del file iniziale (.csv): ")
     output_train = input("Inserisci il percorso per salvare il file TRAIN holdout (.xlsx): ")
@@ -56,11 +57,10 @@ def main():
         target_column='Transported',
         id_column='PassengerId',
         submission_filename=submission_filename,
-        n_estimators=300,
+        n_estimators=500,  
     )
 
     print("Pipeline completata con successo.")
-
 
 if __name__ == "__main__":
     main()
