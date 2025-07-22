@@ -11,9 +11,10 @@ def knn_impute(combined_df, output_train, output_val, output_test):
 
         # rileva tutte le colonne con solo valori {0,1} (dopo aver tolto NaN)
     dummy_cols = [
-        c for c in combined_df.columns 
-        if combined_df[c].dropna().isin([0,1]).all() 
-        and combined_df[c].dtype in ['int64','float64']
+    c for c in combined_df.columns 
+    if c != 'Transported'
+    and combined_df[c].dropna().isin([0,1]).all() 
+    and combined_df[c].dtype in ['int64', 'float64']
     ]
 
     # escludile dallo scaling
@@ -33,19 +34,27 @@ def knn_impute(combined_df, output_train, output_val, output_test):
     df_scaled = df_numeric.copy()
     df_scaled[numeric_cols] = scaler.transform(df_numeric)
 
+    df_scaled_full = pd.concat([df_scaled, combined_df[dummy_cols]], axis=1)
+
     # Imputazione KNN
     imputer = KNNImputer(n_neighbors=5)
-    imputed_values = imputer.fit_transform(df_scaled)
+    imputed_values = imputer.fit_transform(df_scaled_full)
 
     # Ricrea DataFrame imputato
-    df_imputed = pd.DataFrame(imputed_values, columns=numeric_cols, index=combined_df.index)
+    df_imputed = pd.DataFrame(imputed_values, columns=df_scaled_full.columns, index=combined_df.index)
 
     # De-standardizza
     df_imputed[numeric_cols] = scaler.inverse_transform(df_imputed[numeric_cols])
 
-    # Aggiungi colonne non numeriche
-    for col in cols_to_drop:
-        df_imputed[col] = combined_df[col]
+    negative_mask = (df_imputed[numeric_cols] < 0).any(axis=1)
+    n_dropped = negative_mask.sum()
+    if n_dropped > 0:
+        print(f"Dropped {n_dropped} rows with negative values in numeric features after de-standardization.")
+        df_imputed = df_imputed.drop(df_imputed[negative_mask].index)
+
+    # Aggiungi colonne eliminate dall'imputazione
+    for col in exclude_cols:
+        df_imputed[col] = combined_df.loc[df_imputed.index, col]
 
     #Rendi interi i dati (approssimazione)
     df_imputed[numeric_cols] = df_imputed[numeric_cols].round().astype(np.int64)

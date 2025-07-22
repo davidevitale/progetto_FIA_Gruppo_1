@@ -61,7 +61,6 @@ def adaboost(
     print("\n=== Risultati AdaBoost ===")
     acc = accuracy_score(y_val, y_pred)
     print(f"Accuracy: {acc:.4f}\n")
-    print("Classification Report:\n", classification_report(y_val, y_pred))
     cm = confusion_matrix(y_val, y_pred)
     print("Confusion Matrix:\n", cm)
 
@@ -76,10 +75,10 @@ def adaboost(
     X_test = df_test_encoded.drop(columns=cols_to_drop)
     y_test_pred = model.predict(X_test)
 
-    # 8. Submission con SOLO id_column e target_column (predizioni)
+    # 8. Submission con SOLO id_column e target_column (predizioni) convertendo a bool
     submission = pd.DataFrame({
         id_column: df_test_encoded[id_column],
-        target_column: y_test_pred.astype(int)
+        target_column: y_test_pred.astype(bool)
     })
 
     submission.to_csv(submission_filename, index=False)

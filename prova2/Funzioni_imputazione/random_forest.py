@@ -18,7 +18,6 @@ def random_forest(df_train_encoded, df_val_encoded, target_column, n_estimators=
         target_column (str): Nome della colonna target da predire.
         n_estimators (int): Numero di alberi nella foresta. Default = 100.
         max_depth (int): Profondità massima degli alberi. Default = 8.
-        random_state (int): Semenza per riproducibilità. Default = 42.
 
     Returns:
         model: Modello addestrato (RandomForestClassifier)
@@ -52,9 +51,6 @@ def random_forest(df_train_encoded, df_val_encoded, target_column, n_estimators=
     print("\n=== Risultati Random Forest ===")
     acc = accuracy_score(y_val, y_pred)
     print(f"Accuracy: {acc:.4f}\n")
-
-    print("Classification Report:\n", classification_report(y_val, y_pred))
-
     cm = confusion_matrix(y_val, y_pred)
     print("Confusion Matrix:\n", cm)
 
