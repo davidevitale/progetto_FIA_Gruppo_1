@@ -124,7 +124,7 @@ Grazie a un'analisi esplorativa approfondita e all'uso di funzioni modulari, ogn
 - Le codifiche categoriali sono state gestite con attenzione al data leakage, e il modello è stato validato separando train/val/test.
 
 I modelli AdaBoost e Random Forest hanno dimostrato buone prestazioni.
-In particolare, AdaBoost ha beneficiato della qualità del preprocessing e ha restituito la migliore accuratezza sul validation set.
+In particolare, AdaBoost ha restituito la migliore accuratezza sul validation set.
 
 Il progetto ha rafforzato la comprensione delle buone pratiche in ML, dalla gestione dei dati mancanti alla produzione di un modello solido e pronto per la submission.
 
