@@ -36,11 +36,12 @@ Il progetto implementa una pipeline completa di preprocessing, imputazione, codi
    - Conversione dei dati per uniformare il formato.
 
 3. **Imputazione valori mancanti**  
-   - Surname / Group / Deck → HomePlanet  
-   - Spese → CryoSleep  
-   - Group → Deck  
-   - Pianeta + Cognome → Destination  
-   - Regioni cabina → Cabin_region  
+   - Surname + Group + Deck → HomePlanet  
+   - Expenditures → CryoSleep  
+   - Group + outlier → Deck  
+   - HomePlanet + Surname + moda → Destination  
+   - Group + valori meno frequenti → Cabin_region
+   - moda → Side
    - KNN per imputare valori numerici residui.
 
 4. **Codifica**
