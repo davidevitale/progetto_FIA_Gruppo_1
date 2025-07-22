@@ -2,9 +2,9 @@ from Funzioni_imputazione.converti_valori_e_colonne import converti_valori_colon
 from Funzioni_imputazione.imputazione import imputazione
 from Funzioni_imputazione.adaboost import adaboost
 from hold import holdout_split
-import time
 
 def main():
+
 
     # === Input dei percorsi dei file ===
     input_file = input("Inserisci il percorso del file iniziale (.csv): ")
@@ -61,6 +61,7 @@ def main():
     )
 
     print("Pipeline completata con successo.")
+
 
 if __name__ == "__main__":
     main()
