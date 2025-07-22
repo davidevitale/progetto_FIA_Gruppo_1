@@ -113,6 +113,13 @@ python-dateutil==2.9.0.post0
 
 ---
 
+## Risultati
+
+Accuracy_ValidationSet = 80.4%
+Accuracy_TestSet = 79.4%
+
+La vicinanza tra i valori di accuracy su validation e test indica un buon equilibrio tra fitting e generalizzazione. Il rischio di overfitting è stato ridotto grazie alla scelta ponderata degli iperparametri del modello adottato.
+
 ## Conclusioni
 
 Questo progetto ha permesso di costruire una pipeline completa di preprocessing e classificazione per il dataset Spaceship Titanic.
