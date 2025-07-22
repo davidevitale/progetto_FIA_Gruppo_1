@@ -47,7 +47,7 @@ Il progetto implementa una pipeline completa di preprocessing, imputazione, codi
    - One-hot encoding delle variabili categoriche.
 
 5. **Addestramento e Predizione**  
-   - AdaBoost (con 300 estimatori).  
+   - AdaBoost (con 500 estimatori).  
    - Valutazione sul validation set.  
    - Creazione file di submission .csv per Kaggle.
 
