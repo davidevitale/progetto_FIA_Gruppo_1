@@ -28,7 +28,7 @@ def adaboost(
         target_column (str): Nome della colonna target da predire.
         id_column (str): Nome della colonna identificativa da usare nella submission.
         submission_filename (str): Nome del file CSV di output.
-        n_estimators (int): Numero di estimatori per AdaBoost. Default = 250.
+        n_estimators (int): Numero di estimatori per AdaBoost. Default = 50s0.
 
     Returns:
         model: Modello addestrato (AdaBoostClassifier)
