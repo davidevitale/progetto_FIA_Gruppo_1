@@ -48,9 +48,19 @@ def converti_valori_colonne(train_path, val_path, test_path,
     combined_df['Surname'] = combined_df['Name'].str.split().str[-1]
     combined_df.drop(columns=['Name'], inplace=True)
 
+    # Colonne di spesa
     spesa_cols = ['RoomService', 'FoodCourt', 'ShoppingMall', 'Spa', 'VRDeck']
     combined_df[spesa_cols] = combined_df[spesa_cols].fillna(0)
-    combined_df['Expenditures'] = combined_df[spesa_cols].sum(axis=1) 
+
+    # Trasforma in log(1 + x)
+    for col in spesa_cols:
+        combined_df[f'Log_{col}'] = np.log1p(combined_df[col])
+
+    # Droppa le colonne originali
+    combined_df = combined_df.drop(columns=spesa_cols)
+
+    # Somma delle spese
+    combined_df['Expenditures'] = combined_df[[f'Log_{c}' for c in spesa_cols]].sum(axis=1)
 
     # Trasforma Transported in binario
     combined_df['Transported'] = combined_df['Transported'].map({True: 1, False: 0})
